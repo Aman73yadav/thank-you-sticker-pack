@@ -1,5 +1,7 @@
+import { useState } from "react";
 import StickerCard from "@/components/StickerCard";
-import { StickerShape, StickerVariant } from "@/components/ThankYouSticker";
+import CustomizationPanel from "@/components/CustomizationPanel";
+import { StickerShape, StickerVariant, StickerCustomization, defaultCustomization } from "@/components/ThankYouSticker";
 
 const stickerConfigs: { shape: StickerShape; variant: StickerVariant; label: string }[] = [
   { shape: "rounded", variant: "classic", label: "Rounded Classic" },
@@ -11,43 +13,90 @@ const stickerConfigs: { shape: StickerShape; variant: StickerVariant; label: str
 ];
 
 const Index = () => {
+  const [customization, setCustomization] = useState<StickerCustomization>(defaultCustomization);
+
   return (
-    <div className="min-h-screen bg-background py-16 px-4">
+    <div className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-foreground mb-3 font-script">
             Thank You Stickers
           </h1>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            Beautiful sticker designs for your ecommerce business. Click download to save as high-resolution PNG.
+          <p className="text-muted-foreground max-w-lg mx-auto">
+            Create beautiful, personalized thank you stickers for your ecommerce business. 
+            Customize colors, fonts, and messages, then download as high-resolution PNG.
           </p>
         </div>
 
-        {/* Sticker Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 justify-items-center mb-20">
-          {stickerConfigs.map((config) => (
-            <StickerCard
-              key={`${config.shape}-${config.variant}`}
-              variant={config.variant}
-              shape={config.shape}
-              label={config.label}
+        {/* Main Content */}
+        <div className="flex flex-col lg:flex-row gap-10 mb-16">
+          {/* Customization Panel */}
+          <div className="lg:sticky lg:top-8 lg:self-start">
+            <CustomizationPanel 
+              customization={customization} 
+              onChange={setCustomization} 
             />
-          ))}
+          </div>
+
+          {/* Sticker Grid */}
+          <div className="flex-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 justify-items-center">
+              {stickerConfigs.map((config) => (
+                <StickerCard
+                  key={`${config.shape}-${config.variant}`}
+                  variant={config.variant}
+                  shape={config.shape}
+                  label={config.label}
+                  customization={customization}
+                />
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* The 3 Lines Section */}
+        {/* The 5 Lines Section */}
         <div className="text-center">
           <h2 className="text-xl font-semibold text-foreground mb-6">
-            The Perfect 3-Line Message
+            Your Custom 5-Line Message
           </h2>
-          <div className="bg-card rounded-xl p-8 max-w-md mx-auto border border-border shadow-sticker-soft">
-            <p className="text-3xl font-script text-primary mb-3">Thank You</p>
-            <p className="text-sm font-semibold text-sticker-warm tracking-widest uppercase mb-3">
-              For Your Order
+          <div 
+            className="rounded-xl p-8 max-w-md mx-auto border-2 shadow-sticker-soft"
+            style={{ 
+              backgroundColor: customization.bgColor,
+              borderColor: customization.accentColor 
+            }}
+          >
+            <p 
+              className={`text-3xl mb-2 ${customization.fontStyle === 'script' ? 'font-script' : customization.fontStyle === 'modern' ? 'font-sans font-bold' : 'font-serif'}`}
+              style={{ color: customization.primaryColor }}
+            >
+              {customization.line1}
             </p>
-            <p className="text-sm text-muted-foreground italic">
-              Your support means the world to us ♡
+            <p 
+              className="text-xs font-semibold tracking-widest uppercase mb-2"
+              style={{ color: customization.accentColor }}
+            >
+              {customization.line2}
+            </p>
+            <div className="w-16 h-px mx-auto mb-2" style={{ backgroundColor: customization.accentColor }} />
+            <p 
+              className="text-sm mb-1"
+              style={{ color: customization.primaryColor }}
+            >
+              {customization.line3}
+            </p>
+            <p 
+              className="text-xs tracking-wide mb-1"
+              style={{ color: customization.accentColor }}
+            >
+              {customization.line4}
+            </p>
+            <p 
+              className="text-lg"
+              style={{ color: customization.accentColor }}
+            >
+              {customization.line5}
             </p>
           </div>
         </div>

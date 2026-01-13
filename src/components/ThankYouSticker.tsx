@@ -4,74 +4,95 @@ import { Heart, Star, Sparkles } from "lucide-react";
 export type StickerShape = "rounded" | "circular" | "square" | "diecut" | "ticket" | "badge";
 export type StickerVariant = "classic" | "modern" | "elegant";
 
+export interface StickerCustomization {
+  line1: string;
+  line2: string;
+  line3: string;
+  line4: string;
+  line5: string;
+  primaryColor: string;
+  accentColor: string;
+  bgColor: string;
+  fontStyle: "script" | "modern" | "classic";
+}
+
 interface ThankYouStickerProps {
   variant?: StickerVariant;
   shape?: StickerShape;
   stickerRef?: React.RefObject<HTMLDivElement>;
+  customization?: StickerCustomization;
 }
 
-const ThankYouSticker = ({ variant = "classic", shape = "rounded", stickerRef }: ThankYouStickerProps) => {
-  const variants = {
-    classic: {
-      container: "bg-gradient-to-br from-sticker-cream to-card border-2 border-sticker-border shadow-sticker",
-      title: "text-primary font-script",
-      subtitle: "text-sticker-warm font-medium tracking-wide",
-      tagline: "text-muted-foreground italic",
-      icon: "text-sticker-accent"
-    },
-    modern: {
-      container: "bg-gradient-to-br from-primary to-sticker-warm shadow-sticker-elevated",
-      title: "text-primary-foreground font-bold",
-      subtitle: "text-sticker-cream/90 font-semibold tracking-widest uppercase",
-      tagline: "text-primary-foreground/80",
-      icon: "text-sticker-accent"
-    },
-    elegant: {
-      container: "bg-card border border-sticker-border shadow-sticker-soft",
-      title: "text-foreground font-script",
-      subtitle: "text-primary font-light tracking-[0.3em] uppercase",
-      tagline: "text-muted-foreground font-light",
-      icon: "text-sticker-warm"
-    }
+export const defaultCustomization: StickerCustomization = {
+  line1: "Thank You",
+  line2: "For Your Order",
+  line3: "Your support means the world to us",
+  line4: "Follow us @yourstore",
+  line5: "♡",
+  primaryColor: "#8B5A2B",
+  accentColor: "#D4A574",
+  bgColor: "#FDF8F3",
+  fontStyle: "script",
+};
+
+const ThankYouSticker = ({ 
+  variant = "classic", 
+  shape = "rounded", 
+  stickerRef,
+  customization = defaultCustomization 
+}: ThankYouStickerProps) => {
+  const fontStyles = {
+    script: "font-script",
+    modern: "font-sans font-bold",
+    classic: "font-serif",
   };
 
   const shapeStyles: Record<StickerShape, string> = {
-    rounded: "w-72 h-72 rounded-2xl",
-    circular: "w-72 h-72 rounded-full",
-    square: "w-72 h-72 rounded-lg",
-    diecut: "w-80 h-72 rounded-[3rem] rounded-br-lg rounded-tl-lg",
-    ticket: "w-80 h-64 rounded-xl ticket-shape",
+    rounded: "w-72 h-80 rounded-2xl",
+    circular: "w-80 h-80 rounded-full",
+    square: "w-72 h-80 rounded-lg",
+    diecut: "w-80 h-80 rounded-[3rem] rounded-br-lg rounded-tl-lg",
+    ticket: "w-80 h-72 rounded-xl ticket-shape",
     badge: "w-72 h-80 badge-shape"
   };
 
-  const style = variants[variant];
   const shapeClass = shapeStyles[shape];
-
   const IconComponent = shape === "badge" ? Star : shape === "diecut" ? Sparkles : Heart;
+
+  const containerStyle = {
+    background: variant === "modern" 
+      ? `linear-gradient(135deg, ${customization.primaryColor}, ${customization.accentColor})`
+      : customization.bgColor,
+    borderColor: customization.accentColor,
+  };
+
+  const textColor = variant === "modern" ? "#FFFFFF" : customization.primaryColor;
+  const subtleColor = variant === "modern" ? "rgba(255,255,255,0.8)" : customization.accentColor;
 
   return (
     <div
       ref={stickerRef}
-      className={`relative p-8 flex flex-col items-center justify-center text-center transition-all duration-300 hover:scale-105 hover:shadow-sticker-hover ${style.container} ${shapeClass}`}
+      style={containerStyle}
+      className={`relative p-6 flex flex-col items-center justify-center text-center transition-all duration-300 hover:scale-105 border-2 shadow-sticker hover:shadow-sticker-hover ${shapeClass}`}
     >
       {/* Decorative elements based on shape */}
       {shape === "rounded" && (
         <>
-          <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-current opacity-30 rounded-tl-lg" />
-          <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-current opacity-30 rounded-tr-lg" />
-          <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-current opacity-30 rounded-bl-lg" />
-          <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-current opacity-30 rounded-br-lg" />
+          <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 opacity-30 rounded-tl-lg" style={{ borderColor: textColor }} />
+          <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 opacity-30 rounded-tr-lg" style={{ borderColor: textColor }} />
+          <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 opacity-30 rounded-bl-lg" style={{ borderColor: textColor }} />
+          <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 opacity-30 rounded-br-lg" style={{ borderColor: textColor }} />
         </>
       )}
 
       {shape === "circular" && (
-        <div className="absolute inset-4 rounded-full border border-current opacity-20" />
+        <div className="absolute inset-4 rounded-full border opacity-20" style={{ borderColor: textColor }} />
       )}
 
       {shape === "badge" && (
         <>
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 w-16 h-1 bg-current opacity-20 rounded-full" />
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-16 h-1 bg-current opacity-20 rounded-full" />
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 w-12 h-0.5 opacity-30 rounded-full" style={{ backgroundColor: textColor }} />
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-12 h-0.5 opacity-30 rounded-full" style={{ backgroundColor: textColor }} />
         </>
       )}
 
@@ -83,21 +104,52 @@ const ThankYouSticker = ({ variant = "classic", shape = "rounded", stickerRef }:
       )}
 
       {/* Icon */}
-      <IconComponent className={`w-10 h-10 mb-4 ${style.icon} fill-current animate-pulse-slow`} />
+      <IconComponent 
+        className="w-8 h-8 mb-2 fill-current animate-pulse-slow" 
+        style={{ color: subtleColor }}
+      />
 
       {/* Line 1 - Main Thank You */}
-      <h1 className={`text-4xl mb-2 ${style.title}`}>
-        Thank You
+      <h1 
+        className={`text-3xl mb-1 ${fontStyles[customization.fontStyle]}`}
+        style={{ color: textColor }}
+      >
+        {customization.line1}
       </h1>
 
       {/* Line 2 - For Your Order */}
-      <p className={`text-sm mb-3 ${style.subtitle}`}>
-        For Your Order
+      <p 
+        className="text-xs font-semibold tracking-widest uppercase mb-2"
+        style={{ color: subtleColor }}
+      >
+        {customization.line2}
       </p>
 
+      {/* Decorative line */}
+      <div className="w-16 h-px mb-2" style={{ backgroundColor: subtleColor }} />
+
       {/* Line 3 - Personal Touch */}
-      <p className={`text-xs ${style.tagline}`}>
-        Your support means the world to us ♡
+      <p 
+        className="text-xs mb-1 max-w-[200px]"
+        style={{ color: variant === "modern" ? "rgba(255,255,255,0.9)" : customization.primaryColor }}
+      >
+        {customization.line3}
+      </p>
+
+      {/* Line 4 - Social/CTA */}
+      <p 
+        className="text-[10px] tracking-wide mb-1"
+        style={{ color: subtleColor }}
+      >
+        {customization.line4}
+      </p>
+
+      {/* Line 5 - Heart/Emoji */}
+      <p 
+        className="text-lg"
+        style={{ color: subtleColor }}
+      >
+        {customization.line5}
       </p>
     </div>
   );
